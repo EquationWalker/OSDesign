@@ -29,7 +29,7 @@ int remainingSeats;       // 剩余座位数量
 
 queue<CustomerInfo> haircutQue; // 顾客理发队列,理发师在这里取得理发客户
 LWaitCondition haircutQueNotFull, haircutQueNotEmpty;
-LWaitCondition seatNotFull;
+LWaitCondition seatNotFull;     // 控制座位抢占
 LMutex mutex_haircut, mutex_seat;
 
 class BarberThread : public LThread
@@ -57,13 +57,15 @@ protected:
         while (running)
         {
             haircutQueNotFull.wakeOne();
-            //LThread::yieldCurrentThread();
+
             lcoker.relock();
-            while (0 == haircutQue.size())
+            while (0 == haircutQue.size() && running)
             {
                 printf("\t 理发师: %d %s 进入睡眠!\n", id, name);
                 haircutQueNotEmpty.wait(lcoker.mutex());
             }
+            if (!running) break;
+
             auto info = haircutQue.front();
             haircutQue.pop();
             printf("\t 理发师: %d %s 开始为 %d %s 顾客理发!\n",
@@ -76,7 +78,7 @@ protected:
         }
 
         lcoker.relock();
-        printf("\t 理发师: %d %s 下班啦!\n", id, name);
+        printf("\n\t提示:理发师: %d %s 下班啦!\n\n", id, name);
         remainingBarbers--;
     }
 
@@ -125,7 +127,7 @@ protected:
 
 private:
     int id;
-    const char* name;
+    const char *name;
 };
 
 vector<BarberThread *> barber;
@@ -163,17 +165,20 @@ int main(int argc, char *argv[])
         LThread::yieldCurrentThread();
     }
 
-    for (int i = 0; i < N; i++)
-    {
-        barber[i]->wait();
-        delete barber[i];
-    }
-
     for (int i = 0; i < M; i++)
     {
         customer[i]->wait();
         delete customer[i];
     }
 
+    for (int i = 0; i < N; i++)
+        barber[i]->stop();
+
+    haircutQueNotEmpty.wakeAll();
+    for (int i = 0; i < N; i++)
+    {
+        barber[i]->wait();
+        delete barber[i];
+    }
     return 0;
 }
