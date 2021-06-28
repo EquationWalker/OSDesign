@@ -1,4 +1,4 @@
-# 操作系统课程设计
+# 操作系统课程设计 [LThreads库](https://github.com/EquationWalker/LThreads)
 
 ## ~~v0.1~~
 ​    ~~完成LMutex基本封装~~ 
@@ -20,4 +20,7 @@
 
 ## v0.7
     完成理发师下班操作,完善测试部分
+
+## v0.8
+    完成基本测试工作,待定为正式版本
 

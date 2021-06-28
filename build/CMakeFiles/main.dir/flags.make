@@ -6,5 +6,5 @@ CXX_FLAGS =  -std=c++17
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/mnt/d/AAA/OSDesign/include 
+CXX_INCLUDES = -I/mnt/d/liuxin/Documents/OSDesign/include 
 

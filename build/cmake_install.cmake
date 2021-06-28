@@ -1,4 +1,4 @@
-# Install script for directory: /mnt/d/AAA/OSDesign
+# Install script for directory: /mnt/d/liuxin/Documents/OSDesign
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/mnt/d/AAA/OSDesign/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/d/liuxin/Documents/OSDesign/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

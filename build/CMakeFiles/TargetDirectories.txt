@@ -1,3 +1,3 @@
-/mnt/d/AAA/OSDesign/build/CMakeFiles/rebuild_cache.dir
-/mnt/d/AAA/OSDesign/build/CMakeFiles/edit_cache.dir
-/mnt/d/AAA/OSDesign/build/CMakeFiles/main.dir
+/mnt/d/liuxin/Documents/OSDesign/build/CMakeFiles/rebuild_cache.dir
+/mnt/d/liuxin/Documents/OSDesign/build/CMakeFiles/edit_cache.dir
+/mnt/d/liuxin/Documents/OSDesign/build/CMakeFiles/main.dir

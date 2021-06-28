@@ -6,38 +6,38 @@
 
 #IncludeRegexTransform: 
 
-/mnt/d/AAA/OSDesign/include/LMutex.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutex.h
 common.h
-/mnt/d/AAA/OSDesign/include/common.h
+/mnt/d/liuxin/Documents/OSDesign/include/common.h
 
-/mnt/d/AAA/OSDesign/include/LMutexLocker.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutexLocker.h
 LMutex.h
-/mnt/d/AAA/OSDesign/include/LMutex.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutex.h
 
-/mnt/d/AAA/OSDesign/include/LRunnable.h
+/mnt/d/liuxin/Documents/OSDesign/include/LRunnable.h
 common.h
-/mnt/d/AAA/OSDesign/include/common.h
+/mnt/d/liuxin/Documents/OSDesign/include/common.h
 
-/mnt/d/AAA/OSDesign/include/LThread.h
+/mnt/d/liuxin/Documents/OSDesign/include/LThread.h
 common.h
-/mnt/d/AAA/OSDesign/include/common.h
+/mnt/d/liuxin/Documents/OSDesign/include/common.h
 LRunnable.h
-/mnt/d/AAA/OSDesign/include/LRunnable.h
+/mnt/d/liuxin/Documents/OSDesign/include/LRunnable.h
 LMutex.h
-/mnt/d/AAA/OSDesign/include/LMutex.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutex.h
 
-/mnt/d/AAA/OSDesign/include/LWaitCondition.h
+/mnt/d/liuxin/Documents/OSDesign/include/LWaitCondition.h
 LMutex.h
-/mnt/d/AAA/OSDesign/include/LMutex.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutex.h
 
-/mnt/d/AAA/OSDesign/include/common.h
-stdio.h
+/mnt/d/liuxin/Documents/OSDesign/include/common.h
+cstdio
 -
-stdlib.h
+cstdlib
 -
 unistd.h
 -
-assert.h
+cassert
 -
 pthread.h
 -
@@ -46,15 +46,15 @@ sys/time.h
 sched.h
 -
 
-/mnt/d/AAA/OSDesign/src/main.cpp
+/mnt/d/liuxin/Documents/OSDesign/src/main.cpp
 ../include/LMutex.h
-/mnt/d/AAA/OSDesign/include/LMutex.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutex.h
 ../include/LMutexLocker.h
-/mnt/d/AAA/OSDesign/include/LMutexLocker.h
+/mnt/d/liuxin/Documents/OSDesign/include/LMutexLocker.h
 ../include/LWaitCondition.h
-/mnt/d/AAA/OSDesign/include/LWaitCondition.h
+/mnt/d/liuxin/Documents/OSDesign/include/LWaitCondition.h
 ../include/LThread.h
-/mnt/d/AAA/OSDesign/include/LThread.h
+/mnt/d/liuxin/Documents/OSDesign/include/LThread.h
 queue
 -
 fstream
