@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++17  -rdynamic CMakeFiles/main.dir/src/main.cpp.o  -o ../bin/main   -L/mnt/d/AAA/OSDesign/lib  -Wl,-rpath,/mnt/d/AAA/OSDesign/lib -pthread -Wl,-Bstatic -lLThreads -Wl,-Bdynamic 

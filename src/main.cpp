@@ -7,29 +7,35 @@
 #include <iostream>
 #include <string>
 #include <vector>
-using std::queue;
-using std::cout;
-using std::cin;
-using std::endl;
-using std::string;
+#include <string>
+#include <utility>
 using std::ifstream;
 using std::ofstream;
+using std::pair;
+using std::queue;
+using std::string;
 using std::vector;
+struct CustomerInfo
+{
+    int id;
+    string name;
+};
 
-int N = 0;
-int M = 0;
+int N = 0;                // 理发师数量
+int M = 0;                // 顾客数量
+int serverTime;           // 顾客理发时间
+int remainingBarbers = 0; // 剩余理发师数量
+int remainingSeats;       // 剩余座位数量
 
-queue<int> waitQue;
-LWaitCondition waitQueNotFull, waitQueNotEmpty;
-LMutex mutex_wait, mutex_baber;
-int remainingBarbels = 0;
-int maxSeatCnt = 5;
-int serverTime = 1;
+queue<CustomerInfo> haircutQue; // 顾客理发队列,理发师在这里取得理发客户
+LWaitCondition haircutQueNotFull, haircutQueNotEmpty;
+LWaitCondition seatNotFull;
+LMutex mutex_haircut, mutex_seat;
 
-class BarbelThread : public LThread
+class BarberThread : public LThread
 {
 public:
-    BarbelThread(int id = -1, const char *name = "Tony")
+    BarberThread(int id, const char *name = "Tony")
     {
         this->id = id;
         this->name = name;
@@ -43,30 +49,35 @@ public:
 protected:
     void run() noexcept override
     {
-        LMutexLocker lcoker(&mutex_baber);
-        printf("\t %d 号理发师 %s 已经上线!\n", id, name);
-        remainingBarbels++;
+        LMutexLocker lcoker(&mutex_haircut);
+        printf("\t 理发师: %d %s 已经上线!\n", id, name);
+        remainingBarbers++;
         lcoker.unlock();
 
         while (running)
         {
-            LMutexLocker lcoker(&mutex_wait);
-            while (0 == waitQue.size())
+            haircutQueNotFull.wakeOne();
+            //LThread::yieldCurrentThread();
+            lcoker.relock();
+            while (0 == haircutQue.size())
             {
-                printf("\t %d 号理发师 %s 进入睡眠!\n", id, name);
-                waitQueNotEmpty.wait(lcoker.mutex());
+                printf("\t 理发师: %d %s 进入睡眠!\n", id, name);
+                haircutQueNotEmpty.wait(lcoker.mutex());
             }
-            int cid = waitQue.front();
-            waitQue.pop();
-            printf("\t %d 号理发师 %s 开始为 %d 顾客理发!\n", id, name, cid);
+            auto info = haircutQue.front();
+            haircutQue.pop();
+            printf("\t 理发师: %d %s 开始为 %d %s 顾客理发!\n",
+                   id, name, info.id, info.name.c_str());
             sleep(serverTime);
-            printf("\t %d 号理发师 %s 为 %d 顾客理发完毕!\n", id, name, cid);
-            waitQueNotFull.wakeOne();
+            printf("\t 理发师: %d %s 已经为 %d %s 顾客理发完毕!\n",
+                   id, name, info.id, info.name.c_str());
+            remainingBarbers++;
+            lcoker.unlock();
         }
 
         lcoker.relock();
-        printf("\t %d 号理发师 %s 已跑路!\n", id, name);
-        remainingBarbels--;
+        printf("\t 理发师: %d %s 下班啦!\n", id, name);
+        remainingBarbers--;
     }
 
 private:
@@ -78,66 +89,84 @@ private:
 class CustomerThread : public LThread
 {
 public:
-    CustomerThread(int id)
+    CustomerThread(int id, const char *name = "Sx")
     {
         this->id = id;
+        this->name = name;
     }
 
 protected:
     void run() noexcept override
     {
-        printf("\t顾客: %d 开始申请座位!\n", id);
-        LMutexLocker locker(&mutex_wait);
-        while (maxSeatCnt == waitQue.size())
-            waitQueNotFull.wait(locker.mutex());
-        printf("\t顾客: %d 已经申请到座位!\n", id);
-        waitQue.push(id);
-        waitQueNotEmpty.wakeOne();
+        printf("\t顾客: %d %s 开始申请座位!\n", id, name);
+        mutex_seat.lock();
+        while (0 == remainingSeats)
+            seatNotFull.wait(&mutex_seat);
+        remainingSeats--;
+        printf("\t顾客: %d %s 已经申请到座位!\n", id, name);
+        mutex_seat.unlock();
+
+        printf("\t顾客: %d %s 开始申请理发师!\n", id, name);
+        LMutexLocker locker(&mutex_haircut);
+        while (0 == remainingBarbers)
+            haircutQueNotFull.wait(locker.mutex());
+        printf("\t顾客: %d %s 准备理发!\n", id, name);
+
+        mutex_seat.lock();
+        remainingSeats++;
+        mutex_seat.unlock();
+        seatNotFull.wakeOne();
+
+        haircutQue.push({id, name});
+        remainingBarbers--;
+        printf("\t顾客: %d %s 已经做好理发准备!\n", id, name);
+        haircutQueNotEmpty.wakeOne();
     }
 
 private:
     int id;
+    const char* name;
 };
 
-vector<BarbelThread*> barbel;
-vector<CustomerThread*> customer;
+vector<BarberThread *> barber;
+vector<CustomerThread *> customer;
+char *configFile = "..//config//config.ini";
 
 void loadConfig()
 {
     printf("\t开始读取配置文件\n");
     string name;
-    ifstream in("../config/config.ini");
+    ifstream in(configFile);
     in >> name >> N >> name >> M;
-    in >> name >> maxSeatCnt >> name >> serverTime;
+    in >> name >> remainingSeats >> name >> serverTime;
     printf("\t配置文件读取结果:\n");
     printf("\t理发师线程数量: %d \t 顾客线程数量: %d\n", N, M);
-    printf("\t理发店座位数量: %d \t 顾客服务时间: %d\n\n", maxSeatCnt, serverTime);
+    printf("\t理发店座位数量: %d \t 顾客服务时间: %d\n\n", remainingSeats, serverTime);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    if (argc >= 2)
+        configFile = argv[1];
     loadConfig();
     for (int i = 0; i < N; i++)
     {
-        barbel.push_back(new BarbelThread(i + 1));
-        barbel[i]->start();
+        barber.push_back(new BarberThread(i + 1));
+        barber[i]->start();
         LThread::yieldCurrentThread();
     }
 
     for (int i = 0; i < M; i++)
     {
-        customer.push_back(new CustomerThread(i));
+        customer.push_back(new CustomerThread(i + 1));
         customer[i]->start();
         LThread::yieldCurrentThread();
     }
 
-    //sleep(3);
-
     for (int i = 0; i < N; i++)
     {
-        //barbel[i]->stop();
-        barbel[i]->wait();
-        delete barbel[i];
+        barber[i]->wait();
+        delete barber[i];
     }
 
     for (int i = 0; i < M; i++)
@@ -146,6 +175,5 @@ int main()
         delete customer[i];
     }
 
- 
     return 0;
 }
