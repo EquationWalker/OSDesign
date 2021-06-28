@@ -1,3 +1,0 @@
-/mnt/d/liuxin/Documents/OSTask/test/LMutexTest/build/CMakeFiles/rebuild_cache.dir
-/mnt/d/liuxin/Documents/OSTask/test/LMutexTest/build/CMakeFiles/edit_cache.dir
-/mnt/d/liuxin/Documents/OSTask/test/LMutexTest/build/CMakeFiles/mutex_test.dir

@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++11  -rdynamic CMakeFiles/mutex_test.dir/mutextest.cpp.o CMakeFiles/mutex_test.dir/mnt/d/liuxin/Documents/OSTask/src/LMutex.cpp.o  -o mutex_test  -lpthread 
